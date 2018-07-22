@@ -8,7 +8,7 @@ class DLCSLoginPanel extends React.Component {
       enpoint: 'https://api.dlc.services',
       customer: 5,
       api_id: 'ca1a40af-f071-49c5-914f-46d13e97890a',
-      api_secret: 'dfcef1d9de7330378d6ccb3979ed55c7cde66b4b5a82ba0115ae5ee30ff2c84d',
+      api_secret: '',
       error: ''
     }
     this.onChange = this.onChange.bind(this);
