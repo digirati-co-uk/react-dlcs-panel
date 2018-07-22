@@ -7,7 +7,7 @@ class DLCSLoginPanel extends React.Component {
     this.state = {
       enpoint: 'https://api.dlc.services',
       customer: 5,
-      api_id: 'ca1a40af-f071-49c5-914f-46d13e97890a',
+      api_id: '',
       api_secret: '',
       error: ''
     }
@@ -150,9 +150,6 @@ class DLCSImageSelector extends React.Component {
   }
 
   render() {
-    // const childrenWithProps = React.Children.map(this.props.children, child =>
-    //     React.cloneElement(child, { doSomething: this.doSomething }));
-    
     let self = this;
     return (
       <div className="dlcs-image-panel">

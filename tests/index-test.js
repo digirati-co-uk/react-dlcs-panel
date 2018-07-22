@@ -20,4 +20,4 @@ describe('Component', () => {
       expect(node.innerHTML).toContain('Welcome to React components')
     })
   })
-})
+});
