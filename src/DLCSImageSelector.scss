@@ -1,0 +1,29 @@
+.dlcs-image-panel {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  &__header {
+    span:before {
+      content: 'Logged in as: '
+    }
+    button {
+      float: right;
+    }
+    margin-bottom: 5px;
+  }
+
+  &__list {
+    flex: 1;
+    overflow: auto;
+    &>* {
+      vertical-align: top;
+    }
+  }
+}
