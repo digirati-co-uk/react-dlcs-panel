@@ -1,4 +1,7 @@
 
-import DLCSImageSelector from './DLCSImageSelector'
+import DLCSImageSelector, { DLCSImageThumbnail } from './DLCSImageSelector'
 
-export default DLCSImageSelector;
+export {
+  DLCSImageSelector,
+  DLCSImageThumbnail
+};

@@ -1,11 +1,21 @@
 import React from 'react';
 import './DLCSImageSelector.scss';
 
+/**
+ * @private
+ * @class DLCSLoginPanel
+ * @extends React.Component
+ * 
+ * This component allows the user to specify the DLCS API credentials.
+ * 
+ * The login panel meant to be private at the moment. Only DLCSImageSelector 
+ * should have access for the DLCSLoginPanel.
+ */
 class DLCSLoginPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      enpoint: this.props.endpoint || '',
+      endpoint: this.props.endpoint || '',
       customer: this.props.customer || '',
       api_id: '',
       api_secret: '',
@@ -28,7 +38,7 @@ class DLCSLoginPanel extends React.Component {
       error: ''
     })
     let headers = new Headers();
-    const url = `${this.state.enpoint}/customers/${this.state.customer}`;
+    const url = `${this.state.endpoint}/customers/${this.state.customer}`;
     const auth = btoa(`${this.state.api_id}:${this.state.api_secret}`);
     headers.append(
       'Authorization', 
@@ -37,16 +47,16 @@ class DLCSLoginPanel extends React.Component {
     fetch(url, {
       method: 'GET',
       headers: headers
-    }).then(resp=>resp.json())
-    .then(resp=> {
-      if(!resp || resp.success === false) {
+    }).then(response => response.json())
+    .then(response=> {
+      if(!response || response.success === false) {
         self.setState({error: err});
       } else {
         if (self.props.loginCallback) {
           self.props.loginCallback({
             dlcs_url: url,
             auth: auth,
-            userName: resp.displayName
+            userName: response.displayName
           })
         }
       }
@@ -58,8 +68,8 @@ class DLCSLoginPanel extends React.Component {
   render() {
     return (
       <form id="dlcs_login_form" className="dlcs-login-panel" onSubmit={this.onSubmit}>
-        <label>DLCS Enpoint</label>
-        <input type="url" name="enpoint" value={this.state.enpoint} onChange={this.onChange}/>
+        <label>DLCS Endpoint</label>
+        <input type="url" name="endpoint" value={this.state.endpoint} onChange={this.onChange}/>
         <label>DLCS Customer Id</label>
         <input type="number" step="1" min="0" name="customer" value={this.state.customer} onChange={this.onChange}/>
         <label>DLCS API ID</label>
@@ -77,6 +87,73 @@ class DLCSLoginPanel extends React.Component {
   }
 }
 
+
+/**
+ * @class DLCSImageThumbnail
+ * @extends React.Component
+ * 
+ * The components render a dlcs image preview
+ */
+export class DLCSImageThumbnail extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: false,
+    }
+    this.onImageLoadError = this.onImageLoadError.bind(this);
+    this.getPreviewUrl = this.getPreviewUrl.bind(this);
+    this.getImageInfoUrl = this.getImageInfoUrl.bind(this);
+  }
+  
+  onImageLoadError() {
+    this.setState({
+      error: true
+    })
+  }
+
+  getPreviewUrl(image) {
+    const iiifInfoUrl = this.getImageInfoUrl(image);
+    return `${iiifInfoUrl}/full/!100,100/0/default.jpg`
+  }
+
+  getImageInfoUrl(image) {
+    return image['@id']
+      .replace('api.','')
+      .replace('/customers/','/thumbs/')
+      .replace('/spaces/','/')
+      .replace('/images/','/');
+  }
+
+  render() {
+    let imageInfoUrl = this.getImageInfoUrl(this.props.image);
+    let imageOnClick = this.props.imageOnClick ? 
+      this.props.imageOnClick : 
+      ((ev)=>{ev.preventDefault()});
+    let imageLoadError = this.state.error;
+    let thumbnailUrl = this.getPreviewUrl(this.props.image);
+    const image = this.props.image;
+    const imageClickWrap = (ev)=>{imageOnClick(ev, image)};
+    return (
+      <a href={imageInfoUrl} onClick={imageClickWrap}>
+        {
+           imageLoadError? 
+            <span className="broken-image" title={this.props.image['@id']}></span>
+            :
+            <img src={thumbnailUrl} onError={this.onImageLoadError} />
+        }
+      </a>
+    );
+  }
+}
+
+
+
+/**
+ * @class DLCSImageSelector
+ * @extends React.Component
+ * 
+ * This react component allows the user to list images after selecting DLCS space.
+ */
 class DLCSImageSelector extends React.Component {
   constructor(props) {
     super(props);
@@ -89,8 +166,6 @@ class DLCSImageSelector extends React.Component {
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onSelectedSpace = this.onSelectedSpace.bind(this);
-    this.getPreviewUrl = this.getPreviewUrl.bind(this);
-    this.getImageInfoUrl = this.getImageInfoUrl.bind(this);
   }
     
   sessionAcquiredCallback(session) {
@@ -100,11 +175,11 @@ class DLCSImageSelector extends React.Component {
     fetch(session.dlcs_url + '/spaces', {
       method: 'GET',
       headers: headers
-    }).then(resp=>resp.json())
-    .then(resp=> {
+    }).then(response => response.json())
+    .then(response => {
       self.setState({
         session: session,
-        spaces: resp.member
+        spaces: response.member
       })
     })
     .catch(err=>alert(err))
@@ -126,27 +201,14 @@ class DLCSImageSelector extends React.Component {
     fetch(ev.target.value + '/images', {
       method: 'GET',
       headers: headers
-    }).then(resp=>resp.json())
-    .then(resp=> {
-      console.log(resp.member);
+    }).then(response => response.json())
+    .then(response => {
+      console.log(response.member);
       self.setState({
-        images: resp.member
+        images: response.member
       })
     })
     .catch(err=>alert(err))
-  }
-
-  getPreviewUrl(image) {
-    const iiifInfoUrl = this.getImageInfoUrl(image);
-    return `${iiifInfoUrl}/full/!100,100/0/default.jpg`
-  }
-
-  getImageInfoUrl(image) {
-    return image['@id']
-      .replace('api.','')
-      .replace('/customers/','/thumbs/')
-      .replace('/spaces/','/')
-      .replace('/images/','/');
   }
 
   render() {
@@ -175,15 +237,13 @@ class DLCSImageSelector extends React.Component {
               {(self.state.images || []).map(
                 image=>{
                   return !self.props.children  ? (
-                  <img src={ this.getPreviewUrl(image) }/>
+                  <DLCSImageThumbnail image={image} imageOnClick={
+                    self.props.imageOnClick || ((image) => {
+
+                    })
+                  }/>
                 ) : 
-                ( 
-                  self.props.children(
-                    image, 
-                    this.getPreviewUrl(image), 
-                    this.getImageInfoUrl(image)
-                  ) 
-                )
+                ( self.props.children(image) )
               })}
             </div>  
           </div>:
