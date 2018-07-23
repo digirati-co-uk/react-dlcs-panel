@@ -237,7 +237,7 @@ class DLCSImageSelector extends React.Component {
               {(self.state.images || []).map(
                 image=>{
                   return !self.props.children  ? (
-                  <DLCSImageThumbnail image={image} imageOnClick={
+                  <DLCSImageThumbnail key={image['@id']} image={image} imageOnClick={
                     self.props.imageOnClick || ((image) => {
 
                     })
