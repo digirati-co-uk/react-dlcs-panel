@@ -1,6 +1,6 @@
 # react-dlcs-panel
 
-[![Travis][build-badge]][build]
+[![Travis Build Status][build-badge]][build]
 [![npm package][npm-badge]][npm]
 [![Coveralls][coveralls-badge]][coveralls]
 
@@ -18,8 +18,8 @@ This library implements a DLCS image lister panel for React.
 - [ ] Add search by String1-3, Number1-3
 
 
-[build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
-[build]: https://travis-ci.org/user/repo
+[build-badge]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel.svg?token=Jte42dszspRtC2NURDp5&branch=master
+[build]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel
 
 [npm-badge]: https://img.shields.io/npm/v/npm-package.png?style=flat-square
 [npm]: https://www.npmjs.org/package/npm-package
