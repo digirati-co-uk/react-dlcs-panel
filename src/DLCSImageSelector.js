@@ -5,8 +5,8 @@ class DLCSLoginPanel extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      enpoint: 'https://api.dlc.services',
-      customer: 5,
+      enpoint: this.props.endpoint || '',
+      customer: this.props.customer || '',
       api_id: '',
       api_secret: '',
       error: ''
@@ -151,6 +151,7 @@ class DLCSImageSelector extends React.Component {
 
   render() {
     let self = this;
+    let { endpoint, customer} = this.props;
     return (
       <div className="dlcs-image-panel">
         {
@@ -186,7 +187,11 @@ class DLCSImageSelector extends React.Component {
               })}
             </div>  
           </div>:
-          <DLCSLoginPanel loginCallback={this.sessionAcquiredCallback} />
+          <DLCSLoginPanel 
+            loginCallback={this.sessionAcquiredCallback}
+            endpoint={endpoint}
+            customer={customer}
+          />
         }
       </div>
     );

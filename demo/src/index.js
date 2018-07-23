@@ -9,7 +9,10 @@ class Demo extends Component {
     return <div>
       <link href="https://fonts.googleapis.com/css?family=Crimson+Text|Julius+Sans+One" rel="stylesheet" />
       <h1>react-dlcs-panel Demo</h1>
-      <DLCSImageSelector />
+      <DLCSImageSelector
+        endpoint="https://api.dlc.services"
+        customer={5}
+      />
     </div>
   }
 }

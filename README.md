@@ -6,6 +6,18 @@
 
 This library implements a DLCS image lister panel for React.
 
+**TODO:**
+
+- [ ] Finish Readme.md
+- [x] Provide simple example
+- [ ] Provide complex example with overridden default renderer
+- [ ] Add ability to upload image
+- [ ] Implement default list renderer on click
+- [ ] Add action button `create new space`
+- [ ] Infinite scroll
+- [ ] Add search by String1-3, Number1-3
+
+
 [build-badge]: https://img.shields.io/travis/user/repo/master.png?style=flat-square
 [build]: https://travis-ci.org/user/repo
 

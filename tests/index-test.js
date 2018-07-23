@@ -2,9 +2,9 @@ import expect from 'expect'
 import React from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
 
-import Component from 'src/'
+import DLCSImageSelector from 'src/'
 
-describe('Component', () => {
+describe('DLCSImageSelector', () => {
   let node
 
   beforeEach(() => {
@@ -15,9 +15,13 @@ describe('Component', () => {
     unmountComponentAtNode(node)
   })
 
-  it('displays a welcome message', () => {
-    render(<Component/>, node, () => {
-      expect(node.innerHTML).toContain('Welcome to React components')
+  it('display login form if the not logged in', () => {
+    render(<DLCSImageSelector/>, node, () => {
+      expect(node.innerHTML).toContain('dlcs_login_form');
     })
-  })
+  });
+  //TODO:
+  // it('loads the list if available spaces after received the session variables')
+  // it('loads the the list of images if a space selected')
+  // it('deletes the session if the login button pressed')
 });
