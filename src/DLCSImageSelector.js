@@ -164,12 +164,23 @@ class DLCSImageSelector extends React.Component {
       images: [],
       newSpaceName: 'New Space',
       newSpaceError: null,
+      imageSearch: {
+        string1: '',
+        string2: '',
+        string3: '',
+        number1: 0,
+        number2: 0,
+        number3: 0,
+      }
     }
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onSelectedSpace = this.onSelectedSpace.bind(this);
     this.onAddNewSpace = this.onAddNewSpace.bind(this);
     this.newSpaceNameChanged = this.newSpaceNameChanged.bind(this);
+    this.searchFormChange = this.searchFormChange.bind(this);
+    this.onSearch = this.onSearch.bind(this);
+    this.loadImages = this.loadImages.bind(this);
   }
 
   getAuthHeader(session) {
@@ -198,23 +209,27 @@ class DLCSImageSelector extends React.Component {
       session: null,
       spaces: [],
       selectedSpace: null,
-      images: []
+      images: [],
     })
   }
-    
-  onSelectedSpace(ev) {
+
+  loadImages(targetSpace,qs) {
     let self = this;
-    fetch(ev.target.value + '/images', {
+    fetch(targetSpace + '/images' + (qs ? `?${qs}` : ''), {
       method: 'GET',
       headers: self.getAuthHeader(self.state.session)
     }).then(response => response.json())
     .then(response => {
-      console.log(response.member);
       self.setState({
-        images: response.member
+        images: response.member,
+        selectedSpace: targetSpace
       })
     })
     .catch(err=>alert(err))
+  }
+    
+  onSelectedSpace(ev) {
+    this.loadImages(ev.target.value);
   }
 
   onAddNewSpace(ev) {
@@ -252,6 +267,28 @@ class DLCSImageSelector extends React.Component {
     });
   }
 
+
+  searchFormChange(ev) {
+    let imageSearch = this.state.imageSearch;
+    imageSearch[ev.target.name] = ev.target.value;
+    this.setState({ imageSearch });
+  }
+
+  onSearch(ev) {
+    ev.preventDefault();
+    const queryString = Object.entries(this.state.imageSearch||{}).reduce(
+      (acc, [name, value])=> {
+        if (value !== '' && value !== 0) {
+          acc.push(encodeURIComponent(name) + "=" + encodeURIComponent(value))
+        }
+        return acc;
+      },[]).join('&')
+    this.loadImages(
+      this.state.selectedSpace,
+      queryString ? queryString : undefined
+    );
+  }
+
   render() {
     let self = this;
     let { endpoint, customer} = this.props;
@@ -282,6 +319,51 @@ class DLCSImageSelector extends React.Component {
                     <div>{this.state.newSpaceError}</div> :
                     '' 
                 }
+              </form>
+              <form onSubmit={this.onSearch}>
+                <label>String1</label>
+                <input 
+                  type="text"
+                  name="string1"
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.string1}
+                />
+                <label>String2</label>
+                <input 
+                  type="text" 
+                  name="string2" 
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.string2}
+                />
+                <label>String3</label>
+                <input 
+                  type="text" 
+                  name="string3"
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.string3}
+                />
+                <label>Number1</label>
+                <input 
+                  type="number"
+                  name="number1"
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.number1}
+                />
+                <label>Number2</label>
+                <input 
+                  type="number"
+                  name="number2"
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.number2}
+                />
+                <label>Number3</label>
+                <input 
+                  type="number"
+                  name="number3"
+                  onChange={this.searchFormChange}
+                  value={this.state.imageSearch.number3}
+                />
+                <input type="submit" value="Search" />
               </form>
             </div> 
             <div className="dlcs-image-panel__list">

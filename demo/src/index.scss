@@ -136,3 +136,10 @@ select {
   vertical-align: top;
   display: inline-block;
 }
+
+.dlcs-image-panel {
+  border: 2px solid #c3c3c3;
+  padding: 16px;
+  box-sizing: border-box;
+  flex:1;
+}

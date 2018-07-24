@@ -20,7 +20,7 @@ This library implements a DLCS image lister panel for React.
 - [x] Implement default list renderer on click
 - [x] Add action button `create new space`
 - [ ] Infinite scroll
-- [ ] Add search by String1-3, Number1-3
+- [x] Add search by String1-3, Number1-3
 
 
 [build-badge]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel.svg?token=Jte42dszspRtC2NURDp5&branch=master
