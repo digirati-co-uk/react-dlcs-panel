@@ -27,14 +27,16 @@
     "nwb": "0.21.x",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-highlight": "^0.12.0",
     "sass-loader": "^7.0.3",
     "webpack": "^4.16.1"
   },
-  "author": "",
-  "homepage": "",
+  "author": "Adam Meszaros<adam.meszaros@digirati.com>",
+  "homepage": "https://react-dlcs-panel.netlify.com/",
   "license": "MIT",
-  "repository": "",
+  "repository": "https://github.com/digirati-co-uk/react-dlcs-panel",
   "keywords": [
-    "react-component"
+    "react-component",
+    "DLCS"
   ]
 }

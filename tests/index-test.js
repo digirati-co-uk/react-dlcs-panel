@@ -1,8 +1,8 @@
 import expect from 'expect'
 import React from 'react'
-import {render, unmountComponentAtNode} from 'react-dom'
+import { render, unmountComponentAtNode } from 'react-dom'
 
-import DLCSImageSelector from 'src/'
+import { DLCSImageSelector } from 'src/'
 
 describe('DLCSImageSelector', () => {
   let node
@@ -20,8 +20,14 @@ describe('DLCSImageSelector', () => {
       expect(node.innerHTML).toContain('dlcs_login_form');
     })
   });
-  //TODO:
-  // it('loads the list if available spaces after received the session variables')
-  // it('loads the the list of images if a space selected')
-  // it('deletes the session if the login button pressed')
+
+  // it('loads the list if available spaces after received the session variables', () => {
+
+  // });
+  // it('loads the the list of images if a space selected', () => {
+
+  // });
+  // it('deletes the session if the login button pressed', () => {
+
+  // });
 });
