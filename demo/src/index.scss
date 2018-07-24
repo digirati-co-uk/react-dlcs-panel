@@ -63,6 +63,8 @@ input[type="number"],
 select,
 textarea {
   @include texish-input();
+  width: 100%;
+  box-sizing: border-box;
 }
 
 input[type="submit"],

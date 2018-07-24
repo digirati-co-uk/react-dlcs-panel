@@ -161,20 +161,28 @@ class DLCSImageSelector extends React.Component {
       session: null,
       spaces: [],
       selectedSpace: null,
-      images: []
+      images: [],
+      newSpaceName: 'New Space',
+      newSpaceError: null,
     }
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onSelectedSpace = this.onSelectedSpace.bind(this);
+    this.onAddNewSpace = this.onAddNewSpace.bind(this);
+    this.newSpaceNameChanged = this.newSpaceNameChanged.bind(this);
+  }
+
+  getAuthHeader(session) {
+    const headers = new Headers();
+    headers.append('Authorization', 'Basic ' + session.auth);
+    return headers;
   }
     
   sessionAcquiredCallback(session) {
     let self = this;
-    let headers = new Headers();
-    headers.append('Authorization', 'Basic ' + session.auth);
     fetch(session.dlcs_url + '/spaces', {
       method: 'GET',
-      headers: headers
+      headers: self.getAuthHeader(session)
     }).then(response => response.json())
     .then(response => {
       self.setState({
@@ -196,11 +204,9 @@ class DLCSImageSelector extends React.Component {
     
   onSelectedSpace(ev) {
     let self = this;
-    let headers = new Headers();
-    headers.append('Authorization', 'Basic ' + self.state.session.auth);
     fetch(ev.target.value + '/images', {
       method: 'GET',
-      headers: headers
+      headers: self.getAuthHeader(self.state.session)
     }).then(response => response.json())
     .then(response => {
       console.log(response.member);
@@ -209,6 +215,41 @@ class DLCSImageSelector extends React.Component {
       })
     })
     .catch(err=>alert(err))
+  }
+
+  onAddNewSpace(ev) {
+    const self = this;
+    const { newSpaceName, session } = self.state;
+    ev.preventDefault();
+    if (newSpaceName && newSpaceName.length > 0) {
+      let headers = self.getAuthHeader(session);
+      fetch(session.dlcs_url + '/spaces',{
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({name: newSpaceName})
+      }).then(response=>response.json())
+      .then(response=>{
+        let newSpaces = JSON.parse(JSON.stringify(this.state.spaces));
+        if (response.hasOwnProperty('message')) {
+          throw response.message;
+        }
+        newSpaces.push(response);
+        self.setState({
+          spaces: newSpaces,
+          selectedSpace: response['@id'],
+          newSpaceName: 'New Space',
+          newSpaceError: null,
+        })
+      })
+      .catch(err=> self.setState({
+        newSpaceError: err
+      }));
+    }
+  }
+  newSpaceNameChanged(ev) {
+    this.setState({
+      newSpaceName: ev.target.value
+    });
   }
 
   render() {
@@ -222,7 +263,7 @@ class DLCSImageSelector extends React.Component {
             <div className="dlcs-image-panel__header">
               <span>{this.state.session.userName}</span>
               <button onClick={this.onLogout}>Logout</button>
-              <select onChange={this.onSelectedSpace}>
+              <select onChange={this.onSelectedSpace} value={this.state.selectedSpace}>
                 <option key="" value="">Select Space</option>
                 {(this.state.spaces || []).map(
                   space=>(
@@ -232,6 +273,16 @@ class DLCSImageSelector extends React.Component {
                   )
                 )}
               </select>
+              <form onSubmit={this.onAddNewSpace}>
+                <label>DLCS Space Name</label>
+                <input type="text" name="new_space_name" value={this.state.newSpaceName} onChange={this.newSpaceNameChanged}/>
+                <input type="submit" value="Add New Space" />
+                {
+                  this.state.newSpaceError ? 
+                    <div>{this.state.newSpaceError}</div> :
+                    '' 
+                }
+              </form>
             </div> 
             <div className="dlcs-image-panel__list">
               {(self.state.images || []).map(
