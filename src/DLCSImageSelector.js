@@ -171,7 +171,9 @@ class DLCSImageSelector extends React.Component {
         number1: 0,
         number2: 0,
         number3: 0,
-      }
+      },
+      addNewSpaceActive: false,
+      searchActive: false,
     }
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -181,6 +183,8 @@ class DLCSImageSelector extends React.Component {
     this.searchFormChange = this.searchFormChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
     this.loadImages = this.loadImages.bind(this);
+    this.toggleAddNewSpace = this.toggleAddNewSpace.bind(this);
+    this.toggleSearchPanel = this.toggleSearchPanel.bind(this);
   }
 
   getAuthHeader(session) {
@@ -289,6 +293,20 @@ class DLCSImageSelector extends React.Component {
     );
   }
 
+  toggleAddNewSpace() {
+    this.setState({
+      addNewSpaceActive: !this.state.addNewSpaceActive,
+      searchActive: false
+    });
+  }
+
+  toggleSearchPanel() {
+    this.setState({
+      searchActive: !this.state.searchActive,
+      addNewSpaceActive: false
+    })
+  }
+
   render() {
     let self = this;
     let { endpoint, customer} = this.props;
@@ -310,7 +328,15 @@ class DLCSImageSelector extends React.Component {
                   )
                 )}
               </select>
-              <form onSubmit={this.onAddNewSpace}>
+              <button 
+                className={'dlcs-image-panel__search-button' + (this.state.searchActive ? ' active' :'')  } 
+                onClick={this.toggleSearchPanel}
+              >Search</button>
+              <button 
+                className={'dlcs-image-panel__add-new-space' + (this.state.addNewSpaceActive ? ' active' :'')  } 
+                onClick={this.toggleAddNewSpace}
+              >Add New Space</button>
+              <form style={{display: this.state.addNewSpaceActive? 'block': 'none' }} onSubmit={this.onAddNewSpace}>
                 <label>DLCS Space Name</label>
                 <input type="text" name="new_space_name" value={this.state.newSpaceName} onChange={this.newSpaceNameChanged}/>
                 <input type="submit" value="Add New Space" />
@@ -320,7 +346,7 @@ class DLCSImageSelector extends React.Component {
                     '' 
                 }
               </form>
-              <form onSubmit={this.onSearch}>
+              <form style={{display: this.state.searchActive? 'block': 'none' }} onSubmit={this.onSearch}>
                 <label>String1</label>
                 <input 
                   type="text"

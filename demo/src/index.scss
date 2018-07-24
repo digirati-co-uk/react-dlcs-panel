@@ -5,6 +5,7 @@ body {
 }
 
 $active-colour: rgb(89, 191, 236);
+$darker-colour: #52afd8;
 
 html,
 body {
@@ -81,6 +82,14 @@ button:disabled,
   pointer-events: none;
 }
 
+input[type="submit"],
+button,
+.btn {
+  &.active {
+    background-color: $darker-colour;
+  }
+}
+
 label,
 input,
 select {
@@ -144,5 +153,5 @@ select {
   padding: 16px;
   box-sizing: border-box;
   flex:1;
-
+  margin-bottom: 16px;
 }
