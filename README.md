@@ -61,6 +61,5 @@ const ImageSelectorDemo = (props) => (
 [npm-badge]: https://badge.fury.io/js/react-dlcs-panel.svg
 [npm]: https://www.npmjs.com/package/react-dlcs-panel
 
-[coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
-[coveralls]: https://coveralls.io/github/user/repo
-
+[coveralls-badge]: https://coveralls.io/repos/github/digirati-co-uk/react-dlcs-panel/badge.svg?branch=master
+[coveralls]: https://coveralls.io/github/digirati-co-uk/react-dlcs-panel?branch=master
