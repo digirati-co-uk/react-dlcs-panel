@@ -12,6 +12,8 @@ function qclone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
+const DEFAULT_SPACE_NAME = 'New Space';
+
 /**
  * @private
  * @class DLCSLoginPanel
@@ -161,8 +163,14 @@ export class DLCSImageThumbnail extends React.Component {
   }
 }
 
-const DEFAULT_SPACE_NAME = 'New Space';
 
+/**
+ * @private
+ * @class DLCSNewSpaceForm
+ * @extends React.Component
+ * 
+ * The component renders the new space form.
+ */
 class DLCSNewSpaceForm extends React.Component {
   constructor(props) {
     super(props);
@@ -223,6 +231,101 @@ class DLCSNewSpaceForm extends React.Component {
 }
 
 
+/**
+ * @private
+ * @class DLCSSearchForm
+ * @extends React.Component
+ * 
+ * The component renders a DLCS image search form
+ */
+class DLCSSearchForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      string1: '',
+      string2: '',
+      string3: '',
+      number1: 0,
+      number2: 0,
+      number3: 0,
+    };
+    this.searchFormChange = this.searchFormChange.bind(this);
+    this.onSearch = this.onSearch.bind(this);
+  }
+
+  searchFormChange(ev) {
+    let imageSearchParams = qclone(this.state);
+    imageSearchParams[ev.target.name] = ev.target.value;
+    this.setState(imageSearchParams);
+  }
+
+  onSearch(ev) {
+    ev.preventDefault();
+    const queryString = Object.entries(this.state||{}).reduce(
+      (acc, [name, value])=> {
+        if (name.startsWith('string') && value !== '' || 
+            name.startsWith('number') && value !== 0) {
+          acc.push(encodeURIComponent(name) + "=" + encodeURIComponent(value))
+        }
+        return acc;
+      },[]).join('&')
+
+    if (this.props.callback) {
+      this.props.callback(queryString);
+    }
+  }  
+
+  render() {
+    return (
+      <form style={this.props.style||{}} onSubmit={this.onSearch}>
+        <label>String1</label>
+        <input 
+          type="text"
+          name="string1"
+          onChange={this.searchFormChange}
+          value={this.state.string1}
+        />
+        <label>String2</label>
+        <input 
+          type="text" 
+          name="string2" 
+          onChange={this.searchFormChange}
+          value={this.state.string2}
+        />
+        <label>String3</label>
+        <input 
+          type="text" 
+          name="string3"
+          onChange={this.searchFormChange}
+          value={this.state.string3}
+        />
+        <label>Number1</label>
+        <input 
+          type="number"
+          name="number1"
+          onChange={this.searchFormChange}
+          value={this.state.number1}
+        />
+        <label>Number2</label>
+        <input 
+          type="number"
+          name="number2"
+          onChange={this.searchFormChange}
+          value={this.state.number2}
+        />
+        <label>Number3</label>
+        <input 
+          type="number"
+          name="number3"
+          onChange={this.searchFormChange}
+          value={this.state.number3}
+        />
+        <input type="submit" value="Search" />
+      </form>
+    )
+  }
+}
+
 
 /**
  * @class DLCSImageSelector
@@ -238,26 +341,17 @@ class DLCSImageSelector extends React.Component {
       spaces: [],
       selectedSpace: null,
       images: [],
-      imageSearch: {
-        string1: '',
-        string2: '',
-        string3: '',
-        number1: 0,
-        number2: 0,
-        number3: 0,
-      },
       addNewSpaceActive: false,
       searchActive: false,
     }
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onSelectedSpace = this.onSelectedSpace.bind(this);
-    this.searchFormChange = this.searchFormChange.bind(this);
-    this.onSearch = this.onSearch.bind(this);
     this.loadImages = this.loadImages.bind(this);
     this.toggleAddNewSpace = this.toggleAddNewSpace.bind(this);
     this.toggleSearchPanel = this.toggleSearchPanel.bind(this);
     this.addNewSpaceCallback = this.addNewSpaceCallback.bind(this);
+    this.onSearchCallback = this.onSearchCallback.bind(this);
   }
   
   sessionAcquiredCallback(session) {
@@ -303,28 +397,6 @@ class DLCSImageSelector extends React.Component {
     this.loadImages(ev.target.value);
   }
 
- 
-  searchFormChange(ev) {
-    let imageSearch = this.state.imageSearch;
-    imageSearch[ev.target.name] = ev.target.value;
-    this.setState({ imageSearch });
-  }
-
-  onSearch(ev) {
-    ev.preventDefault();
-    const queryString = Object.entries(this.state.imageSearch||{}).reduce(
-      (acc, [name, value])=> {
-        if (value !== '' && value !== 0) {
-          acc.push(encodeURIComponent(name) + "=" + encodeURIComponent(value))
-        }
-        return acc;
-      },[]).join('&')
-    this.loadImages(
-      this.state.selectedSpace,
-      queryString ? queryString : undefined
-    );
-  }
-
   toggleAddNewSpace() {
     this.setState({
       addNewSpaceActive: !this.state.addNewSpaceActive,
@@ -348,6 +420,13 @@ class DLCSImageSelector extends React.Component {
       addNewSpaceActive: false
     });
     this.loadImages(newSpace['@id']);
+  }
+
+  onSearchCallback(queryString) {
+    this.loadImages(
+      this.state.selectedSpace,
+      queryString ? queryString : undefined
+    );
   }
 
   render() {
@@ -384,51 +463,10 @@ class DLCSImageSelector extends React.Component {
                 session={this.state.session}
                 callback={this.addNewSpaceCallback}
               />
-              <form style={{display: this.state.searchActive? 'block': 'none' }} onSubmit={this.onSearch}>
-                <label>String1</label>
-                <input 
-                  type="text"
-                  name="string1"
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.string1}
-                />
-                <label>String2</label>
-                <input 
-                  type="text" 
-                  name="string2" 
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.string2}
-                />
-                <label>String3</label>
-                <input 
-                  type="text" 
-                  name="string3"
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.string3}
-                />
-                <label>Number1</label>
-                <input 
-                  type="number"
-                  name="number1"
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.number1}
-                />
-                <label>Number2</label>
-                <input 
-                  type="number"
-                  name="number2"
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.number2}
-                />
-                <label>Number3</label>
-                <input 
-                  type="number"
-                  name="number3"
-                  onChange={this.searchFormChange}
-                  value={this.state.imageSearch.number3}
-                />
-                <input type="submit" value="Search" />
-              </form>
+              <DLCSSearchForm 
+                style={{display: this.state.searchActive? 'block': 'none' }}  
+                callback={this.onSearchCallback}
+              />
             </div> 
             <div className="dlcs-image-panel__list">
               {(self.state.images || []).map(
