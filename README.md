@@ -8,7 +8,12 @@ This library implements a DLCS image lister panel for React.
 
 **Demo:**
 
+![Demo image](https://adam-digirati.github.io/react-dlcs-panel_v0_1_demo.gif)
+
+If you have a DLCS account:
+
 [https://react-dlcs-panel.netlify.com/](https://react-dlcs-panel.netlify.com/)
+
 
 ## Installation
 
