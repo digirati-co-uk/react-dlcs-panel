@@ -6,10 +6,37 @@
 
 This library implements a DLCS image lister panel for React.
 
-
 **Demo:**
 
 [https://react-dlcs-panel.netlify.com/](https://react-dlcs-panel.netlify.com/)
+
+## Installation
+
+```
+npm install react-dlcs-panel
+```
+
+or 
+
+```
+yarn add react-dlcs-panel
+```
+
+## Usage
+
+```jsx
+import React from 'react'
+import { DLCSImageSelector } from 'react-dlcs-panel'
+
+const ImageSelectorDemo = (props) => (
+    <div style={{width:'100%', height: '100%'}}>
+        <DLCSImageSelector imageOnClick={(ev, image)=>{ 
+            alert(image['@id'])
+        }/>
+    </div>
+)
+```
+
 
 **TODO:**
 
