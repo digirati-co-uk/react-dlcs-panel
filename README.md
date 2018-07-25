@@ -46,13 +46,10 @@ const ImageSelectorDemo = (props) => (
 **TODO:**
 
 - [ ] Finish Readme.md
-- [x] Provide simple example
-- [x] Provide complex example with overridden default renderer
 - [ ] Add ability to upload image
-- [x] Implement default list renderer on click
-- [x] Add action button `create new space`
 - [ ] Infinite scroll
-- [x] Add search by String1-3, Number1-3
+- [ ] Increase Test Coverage
+- [ ] Refactor Search and New Image
 
 
 [build-badge]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel.svg?token=Jte42dszspRtC2NURDp5&branch=master
