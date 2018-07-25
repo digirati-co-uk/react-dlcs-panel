@@ -58,8 +58,9 @@ const ImageSelectorDemo = (props) => (
 [build-badge]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel.svg?token=Jte42dszspRtC2NURDp5&branch=master
 [build]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel
 
-[npm-badge]: https://img.shields.io/npm/v/react-dlcs-panel.svg?style=flat-square
+[npm-badge]: https://badge.fury.io/js/react-dlcs-panel.svg
 [npm]: https://www.npmjs.com/package/react-dlcs-panel
 
-[coveralls-badge]: https://coveralls.io/repos/github/digirati-co-uk/react-dlcs-panel/badge.svg?branch=master
-[coveralls]: https://coveralls.io/github/digirati-co-uk/react-dlcs-panel?branch=master
+[coveralls-badge]: https://img.shields.io/coveralls/user/repo/master.png?style=flat-square
+[coveralls]: https://coveralls.io/github/user/repo
+
