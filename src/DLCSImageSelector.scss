@@ -28,6 +28,7 @@
     overflow: auto;
     &>* {
       vertical-align: top;
+      display: inline-block;
     }
   }
   &__search-button {
