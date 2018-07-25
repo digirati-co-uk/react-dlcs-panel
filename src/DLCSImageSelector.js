@@ -1,4 +1,5 @@
 import React from 'react';
+import Dropzone from 'react-dropzone';
 import './DLCSImageSelector.scss';
 
 /**
@@ -306,6 +307,24 @@ class DLCSImageSelector extends React.Component {
       addNewSpaceActive: false
     })
   }
+  onDrop(files) {  
+    let self = this;
+    files.filter(
+      file=>file.type.startsWith('image/')
+    ).forEach(image=>{
+      let formData  = new FormData();
+      let headers = self.getAuthHeader(self.state.session)
+      headers.append('Content-Type', 'multipart/form-data')
+      formData.append('image', image);
+      fetch(self.state.selectedSpace + '/images', {
+        method: 'PUT',
+        headers: headers,
+        body: formData
+      }).then(response=>response.json())
+      .then(response=>console.log(JSON.stringify(response,null, 2)))
+      .catch(err=>console.log(err))
+    });
+  }
 
   render() {
     let self = this;
@@ -392,7 +411,7 @@ class DLCSImageSelector extends React.Component {
                 <input type="submit" value="Search" />
               </form>
             </div> 
-            <div className="dlcs-image-panel__list">
+            <Dropzone onDrop={this.onDrop.bind(this)} className="dlcs-image-panel__list">
               {(self.state.images || []).map(
                 image=>{
                   return !self.props.children  ? (
@@ -404,7 +423,7 @@ class DLCSImageSelector extends React.Component {
                 ) : 
                 ( self.props.children(image) )
               })}
-            </div>  
+            </Dropzone>  
           </div>:
           <DLCSLoginPanel 
             loginCallback={this.sessionAcquiredCallback}
