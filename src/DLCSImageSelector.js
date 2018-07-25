@@ -1,6 +1,17 @@
 import React from 'react';
 import './DLCSImageSelector.scss';
 
+
+function getAuthHeader(session) {
+  const headers = new Headers();
+  headers.append('Authorization', 'Basic ' + session.auth);
+  return headers;
+}
+
+function qclone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 /**
  * @private
  * @class DLCSLoginPanel
@@ -150,6 +161,67 @@ export class DLCSImageThumbnail extends React.Component {
   }
 }
 
+const DEFAULT_SPACE_NAME = 'New Space';
+
+class DLCSNewSpaceForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      session: this.props.session,
+      newSpaceName: DEFAULT_SPACE_NAME,
+      newSpaceError: null,
+    }
+    this.newSpaceNameChanged = this.newSpaceNameChanged.bind(this);
+    this.onAddNewSpace = this.onAddNewSpace.bind(this);
+  }
+  
+  newSpaceNameChanged(ev) {
+    this.setState({
+      newSpaceName: ev.target.value
+    });
+  }
+
+  onAddNewSpace(ev) {
+    const self = this;
+    const { newSpaceName, session } = self.state;
+    ev.preventDefault();
+    if (newSpaceName && newSpaceName.length > 0) {
+      let headers = getAuthHeader(session);
+      fetch(session.dlcs_url + '/spaces',{
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({name: newSpaceName})
+      }).then(response=>response.json())
+      .then(response=>{
+        if (response.hasOwnProperty('message')) {
+          throw response.message;
+        }
+        self.setState({
+          newSpaceName: DEFAULT_SPACE_NAME,
+          newSpaceError: null,
+        })
+        if (self.props.callback) {
+          self.props.callback(response);
+        }
+      })
+      .catch(err=> self.setState({
+        newSpaceError: err
+      }));
+    }
+  }
+
+  render () {
+    return (
+      <form style={this.props.style || {}}onSubmit={this.onAddNewSpace}>
+        <label>DLCS Space Name</label>
+        <input type="text" name="new_space_name" value={this.state.newSpaceName} onChange={this.newSpaceNameChanged}/>
+        <input type="submit" value="Add New Space" />
+        { this.state.newSpaceError ? <div>{this.state.newSpaceError}</div> : '' }
+      </form>
+    )
+  } 
+}
+
 
 
 /**
@@ -166,8 +238,6 @@ class DLCSImageSelector extends React.Component {
       spaces: [],
       selectedSpace: null,
       images: [],
-      newSpaceName: 'New Space',
-      newSpaceError: null,
       imageSearch: {
         string1: '',
         string2: '',
@@ -182,26 +252,19 @@ class DLCSImageSelector extends React.Component {
     this.sessionAcquiredCallback = this.sessionAcquiredCallback.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onSelectedSpace = this.onSelectedSpace.bind(this);
-    this.onAddNewSpace = this.onAddNewSpace.bind(this);
-    this.newSpaceNameChanged = this.newSpaceNameChanged.bind(this);
     this.searchFormChange = this.searchFormChange.bind(this);
     this.onSearch = this.onSearch.bind(this);
     this.loadImages = this.loadImages.bind(this);
     this.toggleAddNewSpace = this.toggleAddNewSpace.bind(this);
     this.toggleSearchPanel = this.toggleSearchPanel.bind(this);
+    this.addNewSpaceCallback = this.addNewSpaceCallback.bind(this);
   }
-
-  getAuthHeader(session) {
-    const headers = new Headers();
-    headers.append('Authorization', 'Basic ' + session.auth);
-    return headers;
-  }
-    
+  
   sessionAcquiredCallback(session) {
     let self = this;
     fetch(session.dlcs_url + '/spaces', {
       method: 'GET',
-      headers: self.getAuthHeader(session)
+      headers: getAuthHeader(session)
     }).then(response => response.json())
     .then(response => {
       self.setState({
@@ -225,7 +288,7 @@ class DLCSImageSelector extends React.Component {
     let self = this;
     fetch(targetSpace + '/images' + (qs ? `?${qs}` : ''), {
       method: 'GET',
-      headers: self.getAuthHeader(self.state.session)
+      headers: getAuthHeader(self.state.session)
     }).then(response => response.json())
     .then(response => {
       self.setState({
@@ -240,42 +303,7 @@ class DLCSImageSelector extends React.Component {
     this.loadImages(ev.target.value);
   }
 
-  onAddNewSpace(ev) {
-    const self = this;
-    const { newSpaceName, session } = self.state;
-    ev.preventDefault();
-    if (newSpaceName && newSpaceName.length > 0) {
-      let headers = self.getAuthHeader(session);
-      fetch(session.dlcs_url + '/spaces',{
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({name: newSpaceName})
-      }).then(response=>response.json())
-      .then(response=>{
-        let newSpaces = JSON.parse(JSON.stringify(this.state.spaces));
-        if (response.hasOwnProperty('message')) {
-          throw response.message;
-        }
-        newSpaces.push(response);
-        self.setState({
-          spaces: newSpaces,
-          selectedSpace: response['@id'],
-          newSpaceName: 'New Space',
-          newSpaceError: null,
-        })
-      })
-      .catch(err=> self.setState({
-        newSpaceError: err
-      }));
-    }
-  }
-  newSpaceNameChanged(ev) {
-    this.setState({
-      newSpaceName: ev.target.value
-    });
-  }
-
-
+ 
   searchFormChange(ev) {
     let imageSearch = this.state.imageSearch;
     imageSearch[ev.target.name] = ev.target.value;
@@ -311,6 +339,17 @@ class DLCSImageSelector extends React.Component {
     })
   }
 
+  addNewSpaceCallback(newSpace) {
+    let newSpaces = qclone(this.state.spaces);
+    newSpaces.push(newSpace);
+    this.setState({
+      spaces: newSpaces,
+      selectedSpace: newSpace['@id'],
+      addNewSpaceActive: false
+    });
+    this.loadImages(newSpace['@id']);
+  }
+
   render() {
     let self = this;
     let { endpoint, customer} = this.props;
@@ -340,16 +379,11 @@ class DLCSImageSelector extends React.Component {
                 className={'dlcs-image-panel__add-new-space' + (this.state.addNewSpaceActive ? ' active' :'')  } 
                 onClick={this.toggleAddNewSpace}
               >Add New Space</button>
-              <form style={{display: this.state.addNewSpaceActive? 'block': 'none' }} onSubmit={this.onAddNewSpace}>
-                <label>DLCS Space Name</label>
-                <input type="text" name="new_space_name" value={this.state.newSpaceName} onChange={this.newSpaceNameChanged}/>
-                <input type="submit" value="Add New Space" />
-                {
-                  this.state.newSpaceError ? 
-                    <div>{this.state.newSpaceError}</div> :
-                    '' 
-                }
-              </form>
+              <DLCSNewSpaceForm 
+                style={{display: this.state.addNewSpaceActive? 'block': 'none' }}
+                session={this.state.session}
+                callback={this.addNewSpaceCallback}
+              />
               <form style={{display: this.state.searchActive? 'block': 'none' }} onSubmit={this.onSearch}>
                 <label>String1</label>
                 <input 

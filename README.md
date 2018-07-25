@@ -46,7 +46,7 @@ const ImageSelectorDemo = (props) => (
 **TODO:**
 
 - [ ] Finish Readme.md
-- [ ] Add ability to upload image
+- [ ] Add ability to upload image (currently on feature branch)
 - [ ] Infinite scroll
 - [ ] Increase Test Coverage
 - [ ] Refactor Search and New Image
