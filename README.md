@@ -49,7 +49,6 @@ const ImageSelectorDemo = (props) => (
 - [ ] Add ability to upload image (currently on feature branch)
 - [ ] Infinite scroll
 - [ ] Increase Test Coverage
-- [ ] Refactor Search and New Image
 
 
 [build-badge]: https://travis-ci.com/digirati-co-uk/react-dlcs-panel.svg?token=Jte42dszspRtC2NURDp5&branch=master
