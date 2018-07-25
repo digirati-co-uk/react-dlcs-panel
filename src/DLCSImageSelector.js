@@ -49,8 +49,10 @@ class DLCSLoginPanel extends React.Component {
       headers: headers
     }).then(response => response.json())
     .then(response=> {
-      if(!response || response.success === false) {
-        self.setState({error: err});
+      if(!response ||
+        response.success === "false" ||
+        response.success === false) {
+        self.setState({error: "Invalid credentials"});
       } else {
         if (self.props.loginCallback) {
           self.props.loginCallback({
@@ -62,7 +64,9 @@ class DLCSLoginPanel extends React.Component {
       }
 
     })
-    .catch(err=> self.setState({error: err}));
+    .catch(err=>{
+      self.setState({error: err})
+    } );
   }
 
   render() {
