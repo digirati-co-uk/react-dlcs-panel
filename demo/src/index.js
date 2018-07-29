@@ -49,7 +49,7 @@ class Demo extends Component {
   endpoint="https://api.dlc.services" \n\
   customer={5} \n\
 > \n\
-  {(image)=> \n\
+  {(image, index)=> \n\
     <div className="custom-item"> \n\
       <DLCSImageThumbnail image={image}/> \n\
       <span>{image.width} X {image.height}</span><br/> \n\
@@ -65,11 +65,11 @@ class Demo extends Component {
             endpoint="https://api.dlc.services"
             customer={5}
           >
-            {(image)=>
+            {(image, index)=>
               <div className="custom-item">
                 <DLCSImageThumbnail image={image}/>
                 <span>{image.width} X {image.height}</span><br/>
-                <a href={image['@id']} target="_blank">Info</a>
+                <a href={image['@id']} target="_blank">Info ({index})</a>
               </div>
             }
           </DLCSImageSelector>

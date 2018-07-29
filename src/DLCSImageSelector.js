@@ -470,7 +470,7 @@ class DLCSImageSelector extends React.Component {
             </div> 
             <div className="dlcs-image-panel__list">
               {(self.state.images || []).map(
-                image=>{
+                (image, index)=>{
                   return !self.props.children  ? (
                   <DLCSImageThumbnail key={image['@id']} image={image} imageOnClick={
                     self.props.imageOnClick || ((image) => {
@@ -478,7 +478,7 @@ class DLCSImageSelector extends React.Component {
                     })
                   }/>
                 ) : 
-                ( self.props.children(image) )
+                ( self.props.children(image, index) )
               })}
             </div>  
           </div>:
