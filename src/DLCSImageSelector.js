@@ -92,7 +92,7 @@ class DLCSLoginPanel extends React.Component {
         <label>DLCS API ID</label>
         <input type="text" name="api_id" value={this.state.api_id} onChange={this.onChange}/>
         <label>DLCS API Secret</label>
-        <input type="text" name="api_secret" value={this.state.api_secret} onChange={this.onChange}/>
+        <input type="password" name="api_secret" value={this.state.api_secret} onChange={this.onChange}/>
         <input type="submit" value="Login" />
         {
           this.state.error !== '' ? (
